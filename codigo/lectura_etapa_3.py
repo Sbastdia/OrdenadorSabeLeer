@@ -32,6 +32,11 @@ from keras.models import load_model
 #Module de gestion des processus
 import threading
 
+#función de reactivación de la lectura de letra en voz alta
+def activacionLectura():
+    print('Activación de la lectura de letras')
+    global lecturaActivada
+    lecturaActivada=True
 class Etapa3:
 
     def __init__(self):
@@ -39,13 +44,9 @@ class Etapa3:
         self.lectureActivee = True
 
         #Tiempo de espera en segundos entre cada lectura de letra en voz alta
-        self.duraciónDesactivacionLecturaDeLetra = 5
+        self.duracionDesactivacionLecturaDeLetra = 5
 
-    #función de reactivación de la lectura de letra en voz alta
-    def activacionLectura(self):
-        print('Activación de la lectura de letras')
-        global lecturaActivada
-        lecturaActivada=True
+
 
     def dimensiones(self):
         #dimensiones de la zona de escritura
@@ -74,7 +75,7 @@ class Etapa3:
         print('Inicialización del modelo de aprendizaje')
 
         #Carga del modelo entrenado
-        self.cnn_model = load_model('modelo/modelo_caso_practicoV2.h5')
+        self.cnn_model = load_model('modelo/modelo_caso_practicov2.h5')
         self.kernel = np.ones((5, 5), np.uint8)
 
         #Tabla de letras con su número
@@ -175,7 +176,7 @@ class Etapa3:
                                     cv2.imshow("ContornosLetra", self.capturaLetra)
 
                                     # Redimensionamiento de la imagen
-                                    self.newImage = cv2.resize(self.captureLettre, (28, 28))
+                                    self.newImage = cv2.resize(self.capturaLetra, (28, 28))
                                     self.newImage = np.array(self.newImage)
                                     self.newImage = self.newImage.astype('float32') / 255
                                     self.newImage.reshape(1, 28, 28, 1)
@@ -185,13 +186,13 @@ class Etapa3:
                                     self.prediccion = np.argmax(self.prediccion)
 
                                     # Se indica que se ha detectado una letra
-                                    letraPredicha = True
+                                    self.letraPredicha = True
 
 
                         if self.letraPredicha:
 
                             #Se desactiva la lectura de letras en voz alta
-                            print('Desactivación de la lecture de letra ' + str(duracionDesactivacionLecturaDeLetra) + " segundos")
+                            print('Desactivación de la lecture de letra ' + str(self.duracionDesactivacionLecturaDeLetra) + " segundos")
                             self.lectureActivee = False
 
                             #Se muestra el número de la letra predicho
@@ -204,7 +205,7 @@ class Etapa3:
                             if (self.letraPredicha and self.prediccion != 26):
                                 self.engine.say('Leo la letra ' + str(self.letras[int(self.prediccion) + 1]))
                                 self.engine.runAndWait()
-                                letraPredicha = False
+                                self.letraPredicha = False
 
                             if (self.letraPredicha and self.prediccion == 26):
                                 self.engine.say('No comprendo la letra escrita')
@@ -213,7 +214,7 @@ class Etapa3:
 
                             #Pausa del proceso de lectura de la letra y luego llama a la funciónn para la reactivación de la
                             #lectura
-                            self.timer = threading.Timer(self.duracionDesactivacionLecturaDeLetra, self.activacionLectura)
+                            self.timer = threading.Timer(self.duracionDesactivacionLecturaDeLetra, activacionLectura)
                             self.timer.start()
 
 
@@ -237,7 +238,6 @@ class Etapa3:
     @staticmethod
     def ejecutar():
         etapa3= Etapa3()
-        etapa3.activacionLectura()
         etapa3.dimensiones()
         etapa3.inicioVoz()
         etapa3.eleccionVoz()
