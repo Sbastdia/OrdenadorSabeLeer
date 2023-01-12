@@ -34,7 +34,7 @@ class Aprendizaje:
 
     def __init__(self):
         #Carga de las imágenes
-        self.emnist_data = MNIST(path='datas\\', return_type='numpy')
+        self.emnist_data = MNIST(path='codigo/datas', return_type='numpy')
         self.emnist_data.select_emnist('letters')
         self.Imagenes, self.Etiquetas = self.emnist_data.load_training()
 
@@ -143,7 +143,7 @@ class Aprendizaje:
                     batch_size=self.batch_size,
                     epochs=self.epochs,
                     verbose=1,
-                    validation_data=(self.imagenes_validacion, self.tiquetas_validacion))
+                    validation_data=(self.imagenes_validacion, self.etiquetas_validacion))
 
     def guardado(self):
         # Guardado del modelo

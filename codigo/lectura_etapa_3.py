@@ -42,7 +42,7 @@ class Etapa3:
         self.duraciónDesactivacionLecturaDeLetra = 5
 
     #función de reactivación de la lectura de letra en voz alta
-    def activacionLectura():
+    def activacionLectura(self):
         print('Activación de la lectura de letras')
         global lecturaActivada
         lecturaActivada=True
